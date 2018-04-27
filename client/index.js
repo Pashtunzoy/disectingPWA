@@ -16,10 +16,12 @@ import 'file-loader?name=./apple-touch-icon-76x76.png!./img/apple-touch-icon-76x
 import 'file-loader?name=./apple-touch-icon-114x114.png!./img/apple-touch-icon-114x114.png';
 import 'file-loader?name=./apple-touch-icon-120x120.png!./img/apple-touch-icon-120x120.png';
 import 'file-loader?name=./apple-touch-icon-144x144.png!./img/apple-touch-icon-144x144.png';
-import 'file-loader?name=./apple-touch-icon-152x152.png!./img/apple-touch-icon-152x152.png';
-import 'file-loader?name=./apple-touch-icon-180x180.png!./img/apple-touch-icon-180x180.png';
+import 'file-loader?name=./apple-touch-icosn-152x152.png!./img/apple-touch-icon-152x152.png';
 
-import 'file-loader?name=web-app-manifest.json!./web-app-manifest.json';
+// Web Application Manifest
+// https://developer.mozilla.org/en-US/docs/Web/Manifest
+import 'file-loader?name=./web-app-manifest.json!./web-app-manifest.json';
+import 'file-loader?name=./apple-touch-icon-180x180.png!./img/apple-touch-icon-180x180.png';
 
 ReactDOM.render((<App />), document.getElementById('root'));
 
