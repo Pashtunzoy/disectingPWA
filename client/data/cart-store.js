@@ -71,7 +71,7 @@ export default class CartStore {
    */
   _saveCart() {
     this._onItemsUpdated();
-    console.log(this.items);
+    // console.log(this.items);
     var itemsData = JSON.stringify(this.items);
 
     const url = 'https:!/localhost:3100/api/cart/items';
@@ -87,9 +87,10 @@ export default class CartStore {
       }
     }
     xhr.send(itemsData);
+    console.log(itemsData)
 
-    return fetch(url).then(res => res.json()).then(items => items);
-    // return Promise.resolve(this.items);
+    // return fetch(url).then(res => res.json()).then(items => items);
+    return Promise.resolve(this.items);
   }
 
   /**
