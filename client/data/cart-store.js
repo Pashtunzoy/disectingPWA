@@ -71,7 +71,25 @@ export default class CartStore {
    */
   _saveCart() {
     this._onItemsUpdated();
-    return Promise.resolve(this.items);
+    console.log(this.items);
+    var itemsData = JSON.stringify(this.items);
+
+    const url = 'https:!/localhost:3100/api/cart/items';
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', url, true);
+    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    xhr.onload = function () {
+      var items = JSON.parse(xhr.responseText);
+      if (xhr.readyState == 4 && xhr.status === 200) {
+        console.table(items);
+      } else {
+        console.error(items);
+      }
+    }
+    xhr.send(itemsData);
+
+    return fetch(url).then(res => res.json()).then(items => items);
+    // return Promise.resolve(this.items);
   }
 
   /**
