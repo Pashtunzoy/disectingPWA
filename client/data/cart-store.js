@@ -73,8 +73,9 @@ export default class CartStore {
     this._onItemsUpdated();
     // console.log(this.items);
     var itemsData = JSON.stringify(this.items);
+    console.log(this.items);
 
-    const url = 'https:!/localhost:3100/api/cart/items';
+    const url = 'https://localhost:3100/api/cart/items';
     const xhr = new XMLHttpRequest();
     xhr.open('PUT', url, true);
     xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
@@ -87,10 +88,12 @@ export default class CartStore {
       }
     }
     xhr.send(itemsData);
-    console.log(itemsData)
-
-    // return fetch(url).then(res => res.json()).then(items => items);
-    return Promise.resolve(this.items);
+    fetch(url).then(res => res.json()).then(items => {
+      return items;
+    });
+    console.log('Here');
+    // return finalData;
+    // return Promise.resolve(this.items);
   }
 
   /**
