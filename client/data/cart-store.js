@@ -77,7 +77,7 @@ export default class CartStore {
       headers: {
         'content-type': 'application/json'
       },
-      body: this.items,
+      body: JSON.stringify(this.items),
     })
       .then((response) => {
         if (response.ok) return response.json();
