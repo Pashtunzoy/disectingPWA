@@ -77,14 +77,11 @@ export default class CartStore {
       headers: {
         'content-type': 'application/json'
       },
-      body: JSON.stringify(this.items),
+      body: JSON.stringify({ data: this.items }),
     })
-      .then((response) => {
-        if (response.ok) return response.json();
-        else throw new Error('Problem fetching cart data');
-      })
-      .then((jsonData) => jsonData.data);
-    // return Promise.resolve(this.items);
+      .then(res => res.json())
+      .then((jsonData) => jsonData.data)
+      .catch(err => console.log(err));
   }
 
   /**
