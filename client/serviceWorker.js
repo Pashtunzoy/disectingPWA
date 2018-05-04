@@ -1,11 +1,17 @@
 
-const currentCache = 'assets-v1';
+const currentCache = 'assets-v2';
 const fallBackImage = 'https://localhost:3100/images/fallback-vegetables.png';
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(currentCache).then(cache => {
       cache.add(fallBackImage);
+      return cache.addAll(
+        fetch('/asset-manifest.json')
+          .then(res => res.json())
+          .then(data => data)
+          .catch(err => console.log(err))
+      )
     })
   );
 });
