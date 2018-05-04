@@ -25,10 +25,9 @@ self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
 
   event.respondWith(
-    caches.match('/asset-manifest.json')
-      .then(res => res.json())
-      .then(data => data)
-      .catch(() => fetch(event.request.url))
+    caches.match(event.request)
+      .then(res => res || fetch(event.request.url))
+      .catch(() => caches.match(event.request))
   )
   // if(acceptHeader.indexOf('image/*') >= 0 &&
   // requestUrl.pathname.indexOf('/images/') === 0) {
