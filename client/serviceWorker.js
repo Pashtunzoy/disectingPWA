@@ -24,25 +24,25 @@ self.addEventListener('fetch', event => {
   const acceptHeader = event.request.headers.get('accept');
   const requestUrl = new URL(event.request.url);
 
+  if(acceptHeader.indexOf('image/*') >= 0 &&
+  requestUrl.pathname.indexOf('/images/') === 0) {
+
+    event.respondWith(
+      fetch(event.request.url)
+        .then(res => {
+          if (!res.ok) {
+            return caches.match(fallBackImage, { cacheName: currentCache});
+          } else {
+            return res;
+          }
+        }).catch(err => 
+          caches.match(fallBackImage, { cacheName: currentCache })
+        )
+    );
+  }
   event.respondWith(
     caches.match(event.request)
       .then(res => res || fetch(event.request.url))
       .catch(() => caches.match(event.request))
   )
-  // if(acceptHeader.indexOf('image/*') >= 0 &&
-  // requestUrl.pathname.indexOf('/images/') === 0) {
-
-  //   event.respondWith(
-  //     fetch(event.request.url)
-  //       .then(res => {
-  //         if (!res.ok) {
-  //           return caches.match(fallBackImage, { cacheName: currentCache});
-  //         } else {
-  //           return res;
-  //         }
-  //       }).catch(err => 
-  //         caches.match(fallBackImage, { cacheName: currentCache })
-  //       )
-  //   );
-  // }
 });
