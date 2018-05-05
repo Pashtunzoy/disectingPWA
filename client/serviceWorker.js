@@ -17,7 +17,11 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  console.log('service worker activated: ', event);
+  event.respondWith(
+    fetch(event.request).then(data => {
+      console.log(data);
+    })
+  )
 });
 
 self.addEventListener('fetch', event => {
@@ -26,7 +30,6 @@ self.addEventListener('fetch', event => {
 
   if(acceptHeader.indexOf('image/*') >= 0 &&
   requestUrl.pathname.indexOf('/images/') === 0) {
-
     event.respondWith(
       fetchFallBackImage(event)
     );
