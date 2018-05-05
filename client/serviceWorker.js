@@ -28,16 +28,7 @@ self.addEventListener('fetch', event => {
   requestUrl.pathname.indexOf('/images/') === 0) {
 
     event.respondWith(
-      fetch(event.request.url)
-        .then(res => {
-          if (!res.ok) {
-            return caches.match(fallBackImage, { cacheName: currentCache});
-          } else {
-            return res;
-          }
-        }).catch(err => 
-          caches.match(fallBackImage, { cacheName: currentCache })
-        )
+      fetchFallBackImage(event)
     );
   }
   event.respondWith(
@@ -46,3 +37,17 @@ self.addEventListener('fetch', event => {
       .catch(() => caches.match(event.request))
   )
 });
+
+
+function fetchFallBackImage(e) {
+  fetch(e.request.url)
+    .then(res => {
+      if (!res.ok) {
+        return caches.match(fallBackImage, { cacheName: currentCache });
+      } else {
+        return res;
+      }
+    }).catch(err =>
+      caches.match(fallBackImage, { cacheName: currentCache })
+    )
+}
