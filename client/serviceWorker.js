@@ -1,7 +1,7 @@
+import { precacheStaticAssets, removeUnusedCaches, ALL_CACHES_LIST } from './sw/caches';
 
 const currentCache = 'assets-v2';
 const fallBackImage = 'https://localhost:3100/images/fallback-vegetables.png';
-const ASSET_URL = '/asset-manifest.json';
 
 self.addEventListener('install', event => {
   event.waitUntil(
