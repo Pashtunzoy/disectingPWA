@@ -1,4 +1,4 @@
-import { precacheStaticAssets, removeUnusedCaches, ALL_CACHES_LIST } from './sw/caches';
+import { precacheStaticAssets, removeUnusedCaches, ALL_CACHES, ALL_CACHES_LIST } from './sw/caches';
 
 const currentCache = 'assets-v2';
 const fallBackImage = 'https://localhost:3100/images/fallback-vegetables.png';
@@ -6,17 +6,16 @@ const fallBackImage = 'https://localhost:3100/images/fallback-vegetables.png';
 self.addEventListener('install', event => {
   event.waitUntil(
     Promise.all([
-      cache.open(fallBackImage)
-        .then(cache => cache.add(fallBackImage))
+      caches.open(ALL_CACHES.fallBackImages)
+        .then(cache => cache.add(fallBackImage)),
+      precacheStaticAssets()
     ])
   );
 });
 
 self.addEventListener('activate', event => {
-  event.respondWith(
-    fetch(event.request).then(data => {
-      console.log(data);
-    })
+  event.waitUntil(
+    removeUnusedCaches(ALL_CACHES_LIST)
   )
 });
 
