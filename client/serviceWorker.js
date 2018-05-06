@@ -5,10 +5,10 @@ const fallBackImage = 'https://localhost:3100/images/fallback-vegetables.png';
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(currentCache).then(cache => {
-      cache.add(fallBackImage);
-      return cache.addAll(fetchAssets);
-    })
+    Promise.all([
+      cache.open(fallBackImage)
+        .then(cache => cache.add(fallBackImage))
+    ])
   );
 });
 
