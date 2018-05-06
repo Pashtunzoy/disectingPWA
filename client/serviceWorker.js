@@ -1,17 +1,13 @@
 
 const currentCache = 'assets-v2';
 const fallBackImage = 'https://localhost:3100/images/fallback-vegetables.png';
+const ASSET_URL = '/asset-manifest.json';
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(currentCache).then(cache => {
       cache.add(fallBackImage);
-      return cache.addAll(
-        fetch('/asset-manifest.json')
-          .then(res => res.json())
-          .then(data => data)
-          .catch(err => console.log(err))
-      )
+      return cache.addAll(fetchAssets);
     })
   );
 });
@@ -35,15 +31,33 @@ self.addEventListener('fetch', event => {
     );
   }
   event.respondWith(
-    caches.match(event.request)
-      .then(res => res || fetch(event.request.url))
-      .catch(() => caches.match(event.request))
+    caches.match(ASSET_URL)
+      .then(res => res.json())
+      .then(data => data)
+      .catch(err => fetch(event.request))
   )
 });
 
 
+function fetchAssets() {
+  const assets = [];
+  fetch(ASSET_URL)
+    .then(res => res.json())
+    .then(data => {
+      for (let i in data) {
+        assets.push(data[i]);
+      }
+    })
+    .catch(err => console.log(err))
+  return assets;
+}
+
+
 function fetchFallBackImage(e) {
-  fetch(e.request.url)
+  fetch(e.request.url, {
+    mode: 'cors',
+    credentials: 'omit'
+  })
     .then(res => {
       if (!res.ok) {
         return caches.match(fallBackImage, { cacheName: currentCache });
