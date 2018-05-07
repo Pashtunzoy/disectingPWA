@@ -1,12 +1,12 @@
 import { precacheStaticAssets, removeUnusedCaches, ALL_CACHES, ALL_CACHES_LIST } from './sw/caches';
 
-const currentCache = 'assets-v2';
+const currentCache = 'assets-v1';
 const fallBackImage = 'https://localhost:3100/images/fallback-vegetables.png';
-
+console.log(ALL_CACHES);
 self.addEventListener('install', event => {
   event.waitUntil(
     Promise.all([
-      caches.open(ALL_CACHES.fallBackImages)
+      caches.open(currentCache)
         .then(cache => cache.add(fallBackImage)),
       precacheStaticAssets()
     ])
@@ -15,7 +15,10 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    removeUnusedCaches(ALL_CACHES_LIST)
+    Promise.all([
+      removeUnusedCaches(ALL_CACHES_LIST),
+      removeUnusedCaches(currentCache)
+    ])
   )
 });
 
@@ -29,31 +32,26 @@ self.addEventListener('fetch', event => {
       fetchFallBackImage(event)
     );
   }
-  event.respondWith(
-    caches.match(ASSET_URL)
-      .then(res => res.json())
-      .then(data => data)
-      .catch(err => fetch(event.request))
-  )
 });
 
 
-function fetchAssets() {
-  const assets = [];
-  fetch(ASSET_URL)
-    .then(res => res.json())
-    .then(data => {
-      for (let i in data) {
-        assets.push(data[i]);
-      }
-    })
-    .catch(err => console.log(err))
-  return assets;
-}
+// function fetchAssets() {
+//   const assets = [];
+//   fetch(ASSET_URL)
+//     .then(res => res.json())
+//     .then(data => {
+//       for (let i in data) {
+//         assets.push(data[i]);
+//       }
+//     })
+//     .catch(err => console.log(err))
+//   return assets;
+// }
 
 
 function fetchFallBackImage(e) {
-  fetch(e.request.url, {
+  // debugger;
+  return fetch(e.request, {
     mode: 'cors',
     credentials: 'omit'
   })
