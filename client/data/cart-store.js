@@ -94,15 +94,9 @@ export default class CartStore {
       headers: {
         'content-type': 'application/json'
       },
-<<<<<<< HEAD
-      body: JSON.stringify({ data: this.items }),
-    })
-      .catch(err => console.log(err))
-=======
       body: JSON.stringify({ data: this._items })
     }).then((response) => response.json())
       .then((jsonData) => jsonData.data)
->>>>>>> femasters/8-complete
       .then(this._restoreCart)
       .then((newItems) => {
         this._items = newItems;
