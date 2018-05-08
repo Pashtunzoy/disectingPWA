@@ -23,20 +23,7 @@ import 'file-loader?name=./apple-touch-icosn-152x152.png!./img/apple-touch-icon-
 import 'file-loader?name=./web-app-manifest.json!./web-app-manifest.json';
 import 'file-loader?name=./apple-touch-icon-180x180.png!./img/apple-touch-icon-180x180.png';
 
-import 'worker-loader?name=./serviceWorker.js!./serviceWorker.js';
-
-// Service Worker registion
-if ( 'serviceWorker' in navigator) {
-  navigator.serviceWorker.register('serviceWorker.js')
-    .then(reg => {
-      console.log(`Service Worker is registered: ${reg}`);
-    })
-    .catch(err => {
-      console.log(`Error occured while registering Service worker: ${err}`);
-    });
-} else {
-  console.log('Could not register service worker as it isnt supported');
-}
+import 'worker-loader?name=./sw.js!./sw.js';
 
 ReactDOM.render((<App />), document.getElementById('root'));
 
@@ -44,4 +31,8 @@ if (module.hot) {
   module.hot.accept(function () {
     console.log('Accepting the updated printMe module!');
   });
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
 }
