@@ -33,10 +33,24 @@ function fetchImageOrFallback(fetchEvent) {
     .catch(() => caches.match(FALLBACK_IMAGE_URL, { cacheName: FALLBACK_IMAGES}));
 }
 
+function fetchApiJsonWithFallback(event) {
+  return caches.open(ALL_CACHES.fallback)
+    .then(cache => {
+      // cache.addAll(event.request);
+      console.log(event.request);
+      return fetch(event.request);
+    });
+}  
+
 self.addEventListener('fetch', event => {
   let acceptHeader = event.request.headers.get('accept');
   let requestUrl = new URL(event.request.url);
   let isGroceryImage = acceptHeader.indexOf('image/*') >= 0 && requestUrl.pathname.indexOf('/images/') === 0;
+  let isApiJSON = requestUrl.pathname.indexOf('/api/') >= 0;
+
+  // console.log(`acceptHeader: ${acceptHeader}`);
+  // console.log(`requestUrl: ${requestUrl}`)
+  // console.log(isApiJSON);
 
   event.respondWith(
     caches.match(event.request, { cacheName: ALL_CACHES.prefetch })
@@ -46,6 +60,9 @@ self.addEventListener('fetch', event => {
         // Handle grocery images
         if (acceptHeader && isGroceryImage) {
           return fetchImageOrFallback(event)
+        } else if (isApiJSON) {
+        //   console.log(event.request);
+          return fetchApiJsonWithFallback(event);  
         } else {
           // Everything else falls back to the network
           return fetch(event.request);
