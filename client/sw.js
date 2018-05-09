@@ -29,7 +29,6 @@ self.addEventListener('activate', event => {
 function fetchImageOrFallback(fetchEvent) {
   return fetch(fetchEvent.request, {mode: 'cors'})
     .then((response) => {
-      let responseClone = response.clone();
       if (!response.ok){
         return caches.match(FALLBACK_IMAGE_URL);
       }
@@ -37,7 +36,7 @@ function fetchImageOrFallback(fetchEvent) {
         // Successful response
         if (response.ok) {
           // Begin the process of adding the response to the cache
-          cache.put(fetchEvent.request, responseClone);
+          cache.put(fetchEvent.request, response.clone());
         }
       })
       return response;
