@@ -59,7 +59,7 @@ function fetchIndexHTMLWithFallback(fetchEvent) {
           return res;
         })
         .catch(() => 
-          cache.match(fetchEvent.request));
+          cache.match(INDEX_HTML_URL, { cacheName: ALL_CACHES.prefetch }));
     });
 }
 
@@ -69,7 +69,8 @@ self.addEventListener('fetch', event => {
   let isHTMLRequest = event.request.headers.get('accept').indexOf('text/html') !== - 1;
   let isLocal = new URL(event.request.url).origin === location.origin;
 
-  let isGroceryImage = acceptHeader.indexOf('image/*') >= 0 && requestUrl.pathname.indexOf('/images/') === 0;
+  let isGroceryImage = acceptHeader.indexOf('image/*') >= 0 
+    && requestUrl.pathname.indexOf('/images/') === 0;
 
   let isFromApi = requestUrl.origin.indexOf('localhost:3100') >= 0;
 
@@ -80,8 +81,10 @@ self.addEventListener('fetch', event => {
         if (response) return response;
         // Handle grocery images
         if (acceptHeader && isGroceryImage) {
+          // Fallback to the fallbackimage from cache, if the image is not found
           return fetchImageOrFallback(event)
         } else if (isFromApi && event.request.method === 'GET') {
+          // Fetch fresh JSON API everytime but when network fials, return cached data
           return  fetchApiJsonWithFallback(event)
         } else if (isHTMLRequest && isLocal) {
           // Fetch the index.html in case of no network
