@@ -9,16 +9,19 @@ const INDEX_HTML_URL = new URL(INDEX_HTML_PATH, self.location).toString();
 
 // IndexedDB Implementation
 
-function indexDBConnect() {
-  return idb.open('groceryItem-store', 1, upgradeDB => {
-    switch(upgradeDB.oldVersion) {
-    case 0: upgradeDB.createObjectStore('groceryItems', { keyPath: 'id' });
+function groceryItemDb() {
+  return idb.open('groceryItem-store', 1, upgradeDb => {
+    switch (upgradeDb.oldVersion) {
+    // deliberately allow fall-through case blocks
+    case 0:
+      // initial setup
+      upgradeDb.createObjectStore('groceryItems', { keyPath: 'id' });
     }
-  });
+  })
 }
 
 function populateWithGroceryItems() {
-  return indexDBConnect().then(db => {
+  return groceryItemDb().then(db => {
     fetch('https://localhost:3100/api/grocery/items?limit=9999')
       .then(res => res.json())
       .then(({ data: groceryItems }) => {
@@ -35,18 +38,6 @@ function populateWithGroceryItems() {
   });
 }
 
-
-function groceryItemDb() {
-  return idb.open('groceryitem-store', 1, upgradeDb => {
-    switch(upgradeDb.oldVersion) {
-    // deliberately allow fall-through case blocks
-    case 0:
-      // initial setup
-      upgradeDb.createObjectStore('grocery-items', { keyPath: 'id' });
-    }
-  })
-}
-
 /**
  * @return {Promise}
  */
@@ -55,11 +46,11 @@ function downloadGroceryItems() {
     fetch('https://localhost:3100/api/grocery/items?limit=99999')
       .then(response => response.json())
       .then( ({ data: groceryItems }) => {
-        let tx = db.transaction('grocery-items', 'readwrite');
-        tx.objectStore('grocery-items').clear();
+        let tx = db.transaction('groceryItems', 'readwrite');
+        tx.objectStore('groceryItems').clear();
         return tx.complete.then(() => {
-          let txx = db.transaction('grocery-items', 'readwrite');
-          let store = txx.objectStore('grocery-items');
+          let txx = db.transaction('groceryItems', 'readwrite');
+          let store = txx.objectStore('groceryItems');
           groceryItems.forEach(groceryItem => store.put(groceryItem));
           return txx.complete;
         });
@@ -93,10 +84,11 @@ function fallbackImageForRequest(request) {
   let pathName = url.pathname;
   let itemId = parseInt(pathName.substring(pathName.lastIndexOf('/') + 1, pathName.lastIndexOf('.')), 10);
   return groceryItemDb().then(db => {
-    let tx = db.transaction('grocery-items');
-    let store = tx.objectStore('grocery-items');
+    let tx = db.transaction('groceryItems');
+    let store = tx.objectStore('groceryItems');
     return store.get(itemId);
   }).then(groceryItem => {
+    // console.log(groceryItem);
     let { category } = groceryItem;
     return caches.match(`https://localhost:3100/images/fallback-${category.toLowerCase() || 'grocery'}.png`, { cacheName: FALLBACK_IMAGES})
   })
