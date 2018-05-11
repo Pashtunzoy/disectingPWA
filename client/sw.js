@@ -173,14 +173,26 @@ self.addEventListener('fetch', event => {
 // Web PUSH eventListener implementation
 self.addEventListener('push', function (event) {
   console.log('[Service Worker] Push Received.');
-  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
 
-  const title = 'Push Message';
-  const options = {
-    body: 'Yay it works.',
-    // icon: 'images/icon.png',
-    // badge: 'images/badge.png'
-  };
+  let { data } = event;
+  let textData = data.text();
+  if( textData === 'TERMINATE') {
+    self.registration.unregister();
+    return;
+  }
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  let eventData = event.data.json();
+  if ('notification' in eventData) {
+    let { notification } = eventData;
+    const { title } = notification;
+    const options = {
+      body: notification.body,
+      icon: 'https://localhost:3100/img/launcher-icon-4x.png'
+    };
+    self.registration.showNotification(title, options);
+  }
 });
+
+
+
+
